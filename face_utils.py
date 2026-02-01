@@ -8,26 +8,16 @@ def get_face_embedding(image_path):
         return None
 
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
     mp_face_detection = mp.solutions.face_detection
 
     with mp_face_detection.FaceDetection(
         model_selection=0,
         min_detection_confidence=0.5
-    ) as face_detection:
-
-        results = face_detection.process(image_rgb)
+    ) as detector:
+        results = detector.process(image_rgb)
 
         if not results.detections:
             return None
 
-        # Take first detected face
         bbox = results.detections[0].location_data.relative_bounding_box
-
-        # Use bounding box as lightweight "embedding"
-        return np.array([
-            bbox.xmin,
-            bbox.ymin,
-            bbox.width,
-            bbox.height
-        ])
+        return np.array([bbox.xmin, bbox.ymin, bbox.width, bbox.height])

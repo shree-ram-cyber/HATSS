@@ -2,50 +2,53 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
-mp_face_detection = mp.solutions.face_detection
-
 def get_face_embedding(image_path):
+    # Read image safely
+    image = cv2.imread(image_path)
+    if image is None:
+        return None
+
     try:
-        image = cv2.imread(image_path)
-        if image is None:
-            return None
-
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    except Exception:
+        return None
 
-        with mp_face_detection.FaceDetection(
+    try:
+        face_detection = mp.solutions.face_detection.FaceDetection(
             model_selection=0,
             min_detection_confidence=0.5
-        ) as detector:
+        )
 
-            results = detector.process(image_rgb)
+        results = face_detection.process(image_rgb)
 
-            # SAFETY CHECKS
-            if results is None:
-                return None
-            if not hasattr(results, "detections"):
-                return None
-            if results.detections is None:
-                return None
-            if len(results.detections) == 0:
-                return None
+        # Close detector properly (important for Streamlit)
+        face_detection.close()
 
-            detection = results.detections[0]
+        if results is None:
+            return None
+        if results.detections is None:
+            return None
+        if len(results.detections) == 0:
+            return None
 
-            if not hasattr(detection, "location_data"):
-                return None
+        detection = results.detections[0]
 
-            bbox = detection.location_data.relative_bounding_box
+        # Defensive access
+        if not hasattr(detection, "location_data"):
+            return None
+        if not hasattr(detection.location_data, "relative_bounding_box"):
+            return None
 
-            if bbox is None:
-                return None
+        bbox = detection.location_data.relative_bounding_box
 
-            return np.array([
-                float(bbox.xmin),
-                float(bbox.ymin),
-                float(bbox.width),
-                float(bbox.height)
-            ])
+        # Convert to simple numeric vector
+        return np.array([
+            float(bbox.xmin),
+            float(bbox.ymin),
+            float(bbox.width),
+            float(bbox.height)
+        ])
 
     except Exception:
-        # NEVER crash Streamlit
+        # Never let CV crash the app
         return None

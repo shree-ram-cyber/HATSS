@@ -1,6 +1,23 @@
-streamlit
-mediapipe
-opencv-python
-numpy
-scikit-learn
-Pillow
+pytorch (for models)
+scikit-learn (training)
+TensorFlow (help for other 2 above ig)
+HTML/CSS/JS (for UI)
+numpy (mathematics)
+FASTAPI / FLASK (for APIs and server)
+pandas (for logs, alerts, database)
+logging – system logs
+smtplib – email alerts
+Twilio API / Firebase – SMS & push notifications
+JWT – secure login sessions
+OAuth (optional) – future upgrade
+face-recognition – biometric auth for hardware access
+
+Computer Vision:-
+
+opencv-python (cv2) – camera input, motion detection
+face-recognition / dlib – known vs unknown face detection
+IoT & Sensors
+RPi.GPIO / gpiozero – Raspberry Pi control
+pySerial – Arduino ↔ system communication
+Environmental Safety:
+Gas, smoke, water sensors (handled via GPIO + Python)

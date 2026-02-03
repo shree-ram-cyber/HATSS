@@ -28,12 +28,6 @@ Twilio API – SMS alerts
 
 Firebase Cloud Messaging (FCM) – push notifications
 
-📱 UI / App
-
-Flutter – full mobile app UI
-
-REST APIs – Flutter ↔ backend communication
-
 🗄️ Database
 
 Firebase – users, logs, alerts, real-time updates
@@ -60,3 +54,25 @@ Smoke sensors
 
 Water leak sensors
 (handled via GPIO + Python)
+
+Frontend (Web App / Dashboard)
+
+HTML – base structure
+
+CSS – responsive layout & theming
+
+JavaScript (ES6) – logic & API handling
+
+React.js – UI architecture & state management
+
+Chart.js – alerts, graphs, sensor & threat statistics
+
+🔹 Firebase (Frontend Side)
+
+Firebase SDK (JS)
+
+Authentication
+
+Database (real-time updates)
+
+Push notifications (FCM)

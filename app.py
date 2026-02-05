@@ -2,54 +2,55 @@ import streamlit as st
 import random
 import time
 
-# ---------------------------------------------------
-# PAGE CONFIG + SECURITY THEME
-# ---------------------------------------------------
-st.set_page_config(
-    page_title="Home Security System",
-    layout="wide"
-)
+# -----------------------------
+# PAGE CONFIG
+# -----------------------------
+st.set_page_config(page_title="Security Control", layout="wide")
 
+# -----------------------------
+# GLOBAL STYLE — CONTROL ROOM
+# -----------------------------
 st.markdown("""
 <style>
-body {
-    background-color: #0f172a;
-}
-.main-title {
-    font-size: 32px;
-    font-weight: bold;
+html, body, [class*="css"] {
+    background-color: #0b1220;
     color: #e5e7eb;
 }
-.card {
-    background-color: #1f2933;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #334155;
+
+.panel {
+    background: #111827;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid #1f2937;
+    box-shadow: 0 0 12px rgba(0,0,0,0.4);
 }
-.status-green {
-    color: #22c55e;
+
+.title {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.metric-big {
+    font-size: 28px;
     font-weight: bold;
 }
-.status-red {
-    color: #ef4444;
-    font-weight: bold;
-}
-.metric {
-    font-size: 20px;
-    font-weight: bold;
-}
-.alert-box {
-    background-color: #3b0a0a;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #ef4444;
+
+.green {color:#22c55e;}
+.red {color:#ef4444;}
+.yellow {color:#f59e0b;}
+
+.alert {
+    background:#2a0d0d;
+    border:1px solid #ef4444;
+    padding:20px;
+    border-radius:14px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------
+# -----------------------------
 # SESSION STATE
-# ---------------------------------------------------
+# -----------------------------
 if "page" not in st.session_state:
     st.session_state.page = "Dashboard"
 
@@ -59,106 +60,100 @@ if "known" not in st.session_state:
 if "unknown" not in st.session_state:
     st.session_state.unknown = 5
 
-if "intrusion" not in st.session_state:
-    st.session_state.intrusion = False
-
-# ---------------------------------------------------
-# SIDEBAR NAV
-# ---------------------------------------------------
+# -----------------------------
+# SIDEBAR
+# -----------------------------
 st.sidebar.title("🔐 Security Panel")
 
 st.session_state.page = st.sidebar.radio(
     "Navigation",
-    ["Dashboard", "Alert Center", "Memory Logs", "System Settings"]
+    ["Dashboard", "Alert Center", "Memory Logs", "Settings"]
 )
 
 st.sidebar.markdown("---")
-st.sidebar.write("System Status:")
-st.sidebar.markdown('<span class="status-green">● ACTIVE</span>',
+st.sidebar.markdown("System Status:")
+st.sidebar.markdown("<span class='green'>● ACTIVE</span>",
                     unsafe_allow_html=True)
 
-# ===================================================
+# =========================================================
 # DASHBOARD
-# ===================================================
+# =========================================================
 if st.session_state.page == "Dashboard":
 
-    st.markdown('<div class="main-title">🏠 Live Security Dashboard</div>',
+    st.markdown("<div class='title'>🏠 Live Security Dashboard</div>",
                 unsafe_allow_html=True)
 
-    col1, col2 = st.columns([2, 1])
+    left, right = st.columns([2,1])
 
-    # Live feed card
-    with col1:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("Live Camera Monitor")
-        st.image(
-            "https://via.placeholder.com/900x450?text=LIVE+FEED",
-            use_column_width=True
-        )
+    # ---- Camera Panel ----
+    with left:
+        st.markdown("<div class='panel'>", unsafe_allow_html=True)
+        st.subheader("Live Camera Feed")
+
+        st.info("Camera preview placeholder")
+
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Metrics panel
-    with col2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+    # ---- Metrics Panel ----
+    with right:
+        st.markdown("<div class='panel'>", unsafe_allow_html=True)
         st.subheader("System Metrics")
 
-        st.metric("Known Profiles", st.session_state.known)
-        st.metric("Unknown Records", st.session_state.unknown)
-        st.metric("Last Scan", f"{random.randint(1,5)} sec")
+        st.markdown(
+            f"<div class='metric-big green'>{st.session_state.known}</div> Known Profiles",
+            unsafe_allow_html=True)
+
+        st.markdown(
+            f"<div class='metric-big red'>{st.session_state.unknown}</div> Intruder Records",
+            unsafe_allow_html=True)
+
+        st.markdown(
+            f"<div class='metric-big yellow'>{random.randint(1,5)} sec</div> Last Scan",
+            unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
     st.divider()
 
-    if st.button("🔍 Simulate Detection Event"):
-        st.session_state.intrusion = random.choice([True, False])
-
-        if st.session_state.intrusion:
+    if st.button("🔍 Simulate Detection"):
+        if random.choice([True, False]):
             st.session_state.page = "Alert Center"
             st.rerun()
         else:
-            st.toast("Authorized individual detected", icon="✅")
+            st.success("Authorized individual — no threat detected")
 
-# ===================================================
+# =========================================================
 # ALERT CENTER
-# ===================================================
+# =========================================================
 elif st.session_state.page == "Alert Center":
 
-    st.markdown('<div class="main-title">🚨 Intrusion Alert Center</div>',
+    st.markdown("<div class='title red'>🚨 Intrusion Alert</div>",
                 unsafe_allow_html=True)
 
-    st.markdown('<div class="alert-box">', unsafe_allow_html=True)
+    st.markdown("<div class='alert'>", unsafe_allow_html=True)
 
-    st.error("UNAUTHORIZED PRESENCE DETECTED")
+    st.error("Unauthorized presence detected")
 
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns(2)
 
     with col1:
-        st.image(
-            "https://via.placeholder.com/400?text=Captured+Face",
-            caption="Captured Snapshot"
-        )
+        st.warning("Captured image placeholder")
 
     with col2:
-        similarity = round(random.uniform(0.32, 0.55), 2)
-
-        st.write(f"**Similarity Score:** {similarity}")
-        st.write("**Risk Level:** HIGH 🔴")
-        st.write("**Timestamp:** Just now")
+        score = round(random.uniform(0.30,0.55),2)
+        st.write(f"Similarity Score: **{score}**")
+        st.write("Threat Level: **HIGH**")
 
         st.divider()
 
-        approve = st.button("✅ Approve Access")
-        reject = st.button("❌ Mark as Intruder")
-
-        if approve:
+        if st.button("✅ Approve"):
             st.session_state.known += 1
-            st.success("Profile added to authorized memory")
+            st.success("Added to authorized memory")
             time.sleep(1)
             st.session_state.page = "Dashboard"
             st.rerun()
 
-        if reject:
+        if st.button("❌ Reject"):
             st.session_state.unknown += 1
             st.warning("Intruder recorded")
             time.sleep(1)
@@ -167,4 +162,47 @@ elif st.session_state.page == "Alert Center":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# =============================================
+# =========================================================
+# MEMORY LOGS
+# =========================================================
+elif st.session_state.page == "Memory Logs":
+
+    st.markdown("<div class='title'>🧠 Memory Logs</div>",
+                unsafe_allow_html=True)
+
+    st.subheader("Authorized Profiles")
+
+    cols = st.columns(6)
+    for i in range(12):
+        with cols[i % 6]:
+            st.info("KNOWN")
+
+    st.divider()
+
+    st.subheader("Intruder Records")
+
+    cols = st.columns(6)
+    for i in range(8):
+        with cols[i % 6]:
+            st.error("UNKNOWN")
+
+# =========================================================
+# SETTINGS
+# =========================================================
+elif st.session_state.page == "Settings":
+
+    st.markdown("<div class='title'>⚙ System Settings</div>",
+                unsafe_allow_html=True)
+
+    st.markdown("<div class='panel'>", unsafe_allow_html=True)
+
+    st.slider("Detection Sensitivity", 1, 10, 6)
+
+    st.checkbox("Push Alerts", True)
+    st.checkbox("Alarm Sound", True)
+
+    if st.button("Clear Intruder Logs"):
+        st.session_state.unknown = 0
+        st.success("Intruder logs cleared")
+
+    st.markdown("</div>", unsafe_allow_html=True)
